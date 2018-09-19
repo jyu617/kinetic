@@ -1,37 +1,67 @@
 package kinetic
 
-import awsKinesis "github.com/aws/aws-sdk-go/service/kinesis"
+import (
+	"encoding/json"
+	"time"
+
+	"github.com/aws/aws-sdk-go/service/firehose"
+	"github.com/aws/aws-sdk-go/service/kinesis"
+)
 
 // Message represents an item on the Kinesis stream
 type Message struct {
-	awsKinesis.Record
+	// For kinesis.Record
+	ApproximateArrivalTimestamp *time.Time
+	Data                        []byte
+	PartitionKey                *string
+	SequenceNumber              *string
+
+	// For kinesis.PutRecordRequestEntry
+	ExplicitHashKey *string
+
+	// For kinesis.PutRecordResultEntry
+	ErrorCode    *string
+	ErrorMessage *string
+	ShardID      *string
+
+	// For firehose.PutRecordBatchResponseEntry
+	RecordID *string
+
+	FailCount int
 }
 
-// Init initializes a Message.
-// Currently we are ignoring sequenceNumber.
-func (k *Message) Init(msg []byte, key string) *Message {
+// FromRecord creates a message from the kinesis.Record returned from GetRecords
+func FromRecord(record *kinesis.Record) *Message {
 	return &Message{
-		awsKinesis.Record{
-			Data:         msg,
-			PartitionKey: &key,
-		},
+		ApproximateArrivalTimestamp: record.ApproximateArrivalTimestamp,
+		Data:           record.Data,
+		PartitionKey:   record.PartitionKey,
+		SequenceNumber: record.SequenceNumber,
 	}
 }
 
-// SetValue sets the underlying value of the underlying record
-func (k *Message) SetValue(value []byte) {
-	k.Record.Data = value
-}
-
-// Value gets the underlying value of the underlying record
-func (k *Message) Value() []byte {
-	return k.Record.Data
-}
-
-// Key gets the partion key of the message
-func (k *Message) Key() []byte {
-	if k.Record.PartitionKey != nil {
-		return []byte(*k.PartitionKey)
+// RequestEntrySize calculates what the size (in bytes) of the message will be after calling ToRequestEntry on it and
+// marshalling it to json
+func (m *Message) RequestEntrySize() (int, error) {
+	buf, err := json.Marshal(m.ToRequestEntry())
+	if err != nil {
+		return 0, nil
 	}
-	return nil
+	return len(buf), nil
+}
+
+// ToRequestEntry creates a kinesis.PutRecordsRequestEntry to be used in the kinesis.PutRecords API call.
+func (m *Message) ToRequestEntry() *kinesis.PutRecordsRequestEntry {
+	return &kinesis.PutRecordsRequestEntry{
+		Data:            m.Data,
+		ExplicitHashKey: m.ExplicitHashKey,
+		PartitionKey:    m.PartitionKey,
+	}
+}
+
+// ToFirehoseRecord creates a firehose.Record to be used in the firehose.PutRecordBatch API call.
+func (m *Message) ToFirehoseRecord() *firehose.Record {
+	return &firehose.Record{
+		Data: m.Data,
+	}
 }

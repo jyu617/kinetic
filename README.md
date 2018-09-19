@@ -4,13 +4,11 @@
 # kinetic
 Kinetic is an MIT-licensed high-performance AWS Kinesis Client for Go
 
-Kinetic wraps [sendgridlabs go-kinesis library](https://github.com/sendgridlabs/go-kinesis) to provide maximum throughput for AWS Kinesis producers and consumers.
-An instance of a Kinetic listener/producer is meant to be used for each shard, so please use it accordingly. If you use more than one instance per-shard then you will
-hit the AWS Kinesis throughput [limits](http://docs.aws.amazon.com/kinesis/latest/dev/service-sizes-and-limits.html).
+Kinetic wraps [aws-sdk-go](https://github.com/aws/aws-sdk-go.git) to provide maximum throughput with built-in fault tolerance and retry logic for AWS Kinesis producers and consumers.
+The Kinetic producer can write to Kinesis or Firehose and the Kinetic consumer can consume stream data from Kinesis using the aws-sdk-go or using the Kinesis client library (written in Java).  
 
 ### Getting Started
 Before using kinetic, you should make sure you have a created a Kinesis stream and your configuration file has the credentails necessary to read and write to the stream. Once this stream exists in AWS, kinetic will ensure it is in the "ACTIVE" state before running.
-
 
 ## Testing
 Tests are written using [goconvey](http://goconvey.co/) and [kinesalite](https://github.com/mhart/kinesalite). Make sure you have kinesalite running locally before attempting to run the tests. They can be run either via the comamnd line:
@@ -31,45 +29,44 @@ Kinetic can be used to interface with kinesis like so:
 
 
 ```go
-import "github.com/rewardStyle/kinetic"
+import (
+	"github.com/rewardStyle/kinetic"
+	"sync"
+)
 
-// Use configuration in /etc/kinetic.conf
-listener, _ := new(kinetic.Listener).Init()
+// Create a kinetic object associated with a local kinesalite stream
+k, _ := kinetic.NewKinetic(
+    kinetic.AwsConfigCredentials("some-access-key", "some-secret-key", "some-security-token"),
+    kinetic.AwsConfigRegion("some-region"),
+    kinetic.AwsConfigEndpoint(""http://127.0.0.1:4567""),
+)
 
-// Use custom configuration
-producer, _ := new(kinetic.Producer).InitC("your-stream", "0", "shard-type", "accesskey", "secretkey", "region", 10)
+// Create a kinetic producer
+p, _ := kinetic.NewProducer(k.Session.Config, "stream-name")
 
-producer.Send(new(kinetic.Message).Init([]byte(`{"foo":"bar"}`), "test"))
+// Create a kinetic consumer
+c, err := kinetic.NewConsumer(k.Session.Config, "stream-name", "shard-name")
 
-// Using Retrieve
-msg, err := listener.Retrieve()
+
+// Retrieve one message using the consumer's Retrieve function
+msg, err := c.Retrieve()
 if err != nil {
     println(err)
 }
-
-println(string(msg))
 
 // Using Listen - will block unless sent in goroutine
-go listener.Listen(func(msg []byte, wg *sync.WaitGroup) {
-    println(string(msg))
-    wg.Done()
+go c.Listen(func(b []byte, wg *sync.WaitGroup){
+    defer wg.Done()
+    
+    println(string(b))
 })
 
-producer.Send(new(KinesisMessage).Init([]byte(`{"foo":"bar"}`), "test"))
-
-listener.Close()
-producer.Close()
-
-// Or with Kinesis Firehose
-firehose, err := new(kinetic.Producer).Firehose()
-if err != nil {
-    println(err)
-}
-
-firehose.Send(new(KinesisMessage).Init([]byte(`{"foo":"bar"}`), "test"))
-
-firehose.Close()
+// Send a message using the producer 
+p.Send(&kinetic.Message{
+    Data: []byte(`{"foo":"bar"}`),
+})
 
 ```
 
-For more examples take a look at the tests. API documentation can be found [here](https://godoc.org/github.com/rewardStyle/kinetic).
+For more examples take a look at the tests or the test program in the `testexec` directory.  For 
+additional information see the kinetic package documentation [here](https://godoc.org/github.com/rewardStyle/kinetic).
