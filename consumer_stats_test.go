@@ -6,6 +6,7 @@ import (
 	"time"
 
 	metrics "github.com/rcrowley/go-metrics"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 

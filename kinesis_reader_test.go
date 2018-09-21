@@ -1,13 +1,13 @@
 package kinetic
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
-
 	"math/rand"
 	"testing"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestNewKinesisReader(t *testing.T) {

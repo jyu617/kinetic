@@ -1,8 +1,6 @@
 package kinetic
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
-
 	"context"
 	"sync"
 	"testing"
@@ -10,6 +8,8 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestProducer(t *testing.T) {

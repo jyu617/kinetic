@@ -1,8 +1,12 @@
-[![GoDoc](https://godoc.org/github.com/rewardStyle/kinetic?status.svg)](https://godoc.org/github.com/rewardStyle/kinetic)
-[![Circle CI](https://circleci.com/gh/rewardStyle/kinetic/tree/master.svg?style=svg&circle-token=8c8b6e0cca0f0fde6ec41b4e02329c406f74a446)](https://circleci.com/gh/rewardStyle/kinetic/tree/master)
+[![GoDoc](https://godoc.org/github.com/jyu617/kinetic?status.svg)](https://godoc.org/github.com/jyu617/kinetic)
+[![Circle CI](https://circleci.com/gh/jyu617/kinetic/tree/master.svg?style=svg&circle-token=8c8b6e0cca0f0fde6ec41b4e02329c406f74a446)](https://circleci.com/gh/jyu617/kinetic/tree/master)
 
 # kinetic
+
+> forked from github.com/rewardStyle/kinetic w/ a 100+ commit PR merged in
+
 Kinetic is an MIT-licensed high-performance AWS Kinesis Client for Go
+
 
 Kinetic wraps [aws-sdk-go](https://github.com/aws/aws-sdk-go.git) to provide maximum throughput with built-in fault tolerance and retry logic for AWS Kinesis producers and consumers.
 The Kinetic producer can write to Kinesis or Firehose and the Kinetic consumer can consume stream data from Kinesis using the aws-sdk-go or using the Kinesis client library (written in Java).  
@@ -30,7 +34,7 @@ Kinetic can be used to interface with kinesis like so:
 
 ```go
 import (
-	"github.com/rewardStyle/kinetic"
+	"github.com/jyu617/kinetic"
 	"sync"
 )
 
@@ -69,4 +73,4 @@ p.Send(&kinetic.Message{
 ```
 
 For more examples take a look at the tests or the test program in the `testexec` directory.  For 
-additional information see the kinetic package documentation [here](https://godoc.org/github.com/rewardStyle/kinetic).
+additional information see the kinetic package documentation [here](https://godoc.org/github.com/jyu617/kinetic).

@@ -1,8 +1,6 @@
 package kinetic
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
-
 	"container/list"
 	"context"
 	"fmt"
@@ -12,6 +10,8 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 // initialize the randomization seed for the random number generator.
