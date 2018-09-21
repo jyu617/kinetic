@@ -1,8 +1,6 @@
 package kinetic
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
-
 	"context"
 	"fmt"
 	"math/rand"
@@ -15,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/kinesis"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func putRecord(l *Consumer, b []byte) (*string, error) {

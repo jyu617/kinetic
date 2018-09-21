@@ -1,11 +1,12 @@
 package kinetic
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	. "github.com/smartystreets/goconvey/convey"
-
 	"testing"
 	"time"
+
+	"github.com/aws/aws-sdk-go/aws"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestShardIterator(t *testing.T) {

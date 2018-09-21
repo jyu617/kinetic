@@ -1,8 +1,6 @@
 package kinetic
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
-
 	"context"
 	"testing"
 	"time"
@@ -10,6 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/kinesis"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestKinetic(t *testing.T) {
